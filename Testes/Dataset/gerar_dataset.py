@@ -48,8 +48,11 @@ def get_row_armazem(i):
 def get_row_setor(i):
     return [((i - 1) // QTD_ARMAZEM) + 1, 'Setor ' + str(i), '10000001', '0.01']
 
+def gerar_cnpj(i):
+    return '1000000' + str(i)
+
 def get_row_cliente(i):
-    return [((i - 1) // QTD_ARMAZEM) + 1, 'Cliente ' + str(i), '1000000' + str(i), '11911111111', '10000001']
+    return [((i - 1) // QTD_ARMAZEM) + 1, 'Cliente ' + str(i), gerar_cnpj(i), '11911111111', '10000001']
 
 def get_row_item(i):
     return ['Item ' + str(i), i]
@@ -88,7 +91,9 @@ def gerar_datasets():
 def get_row_pedido(i):
     str_itens = '['
     for j in range(((i - 1) % 5) + 1):
-        str_itens += f'{'{'}id:{(i + j) % QTD_ITEM}, quantidade:{5 if i % 2 == 0 else 10}{'}'},'
+        id_item = ((i - 1 + j) % QTD_ITEM) + 1
+        quantidade = 5 if i % 2 == 0 else 10
+        str_itens += f'{'{'}id:{id_item}, quantidade:{quantidade}{'}'},'
     str_itens = str_itens[:-1]
     str_itens += ']'
     
@@ -98,7 +103,7 @@ def get_row_pagamento(i):
     return ['1000000' + str(i), 100 + i]
 
 def get_row_pedido_entregue(i):
-    return [i]
+    return [gerar_cnpj(i)]
 
 def get_row_entrega(i):
     return [i]
@@ -108,13 +113,13 @@ def get_row_nivel_estoque(i):
 
 
 def gerar_transacao_pedido():
-    gerar_csv('Pedido', ['idCliente', 'itens'], CAMINHO_TRANSACAO + 'pedido', QTD_PEDIDO, get_row_pedido)
+    gerar_csv('Pedido', ['idCliente', 'itens'], CAMINHO_TRANSACAO + 'novo_pedido', QTD_PEDIDO, get_row_pedido)
 
 def gerar_transacao_pagamento():
     gerar_csv('Pagamento', ['cnpj', 'valor'], CAMINHO_TRANSACAO + 'pagamento', QTD_PAGAMENTO, get_row_pagamento)
 
 def gerar_transacao_pedido_entregue():
-    gerar_csv('Pedido Entregue', ['idPedido'], CAMINHO_TRANSACAO + 'pedido_entregue', QTD_PEDIDO_ENTREGUE, get_row_pedido_entregue)
+    gerar_csv('Pedido Entregue', ['cnpj'], CAMINHO_TRANSACAO + 'pedido_entregue', QTD_PEDIDO_ENTREGUE, get_row_pedido_entregue)
 
 def gerar_transacao_entrega():
     gerar_csv('Entrega', ['idPedido'], CAMINHO_TRANSACAO + 'entrega', QTD_ENTREGA, get_row_entrega)
@@ -145,7 +150,7 @@ def main():
     # Gerar os gráficos
     # Configurar os contêineres
 
-    gerar_datasets()
+    # gerar_datasets()
     gerar_transacoes()
 
 if __name__ == '__main__':
