@@ -1,0 +1,17 @@
+# VSCode
+.vscode/
+
+# Node.js
+node_modules/
+package-lock.json
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# cache npm
+.npm
+
+# Python
+.venv

@@ -1,0 +1,11 @@
+endpoint,idArmazem,idSetor,idCliente,itens
+/novo_pedido,1,1,1,"{'id': '1', 'quantidade': '5'}"
+/novo_pedido,1,1,1,"{'id': '1', 'quantidade': '5'}"
+/novo_pedido,1,1,1,"{'id': '1', 'quantidade': '5'}"
+/novo_pedido,1,1,1,"{'id': '1', 'quantidade': '5'}"
+/novo_pedido,1,1,1,"{'id': '1', 'quantidade': '5'}"
+/novo_pedido,1,1,1,"{'id': '1', 'quantidade': '5'}"
+/novo_pedido,1,1,1,"{'id': '1', 'quantidade': '5'}"
+/novo_pedido,1,1,1,"{'id': '1', 'quantidade': '5'}"
+/novo_pedido,1,1,1,"{'id': '1', 'quantidade': '5'}"
+/novo_pedido,1,1,1,"{'id': '1', 'quantidade': '5'}"
