@@ -145,7 +145,7 @@ def main():
     # Gerar os gráficos
     # Configurar os contêineres
 
-    # gerar_datasets()
+    gerar_datasets()
     gerar_transacoes()
 
 if __name__ == '__main__':
