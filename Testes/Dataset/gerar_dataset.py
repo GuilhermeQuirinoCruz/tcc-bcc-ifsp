@@ -18,7 +18,7 @@ QTD_PEDIDO = QTD_CLIENTE
 QTD_PAGAMENTO = QTD_PEDIDO
 QTD_PEDIDO_ENTREGUE = QTD_PEDIDO
 QTD_ENTREGA = QTD_PEDIDO
-QTD_NIVEL_ESTOQUE = QTD_ESTOQUE
+QTD_NIVEL_ESTOQUE = QTD_SETOR
 
 
 # Geral
@@ -46,20 +46,20 @@ def get_row_armazem(i):
     return ['/armazem', 'Armazem ' + str(i), '10000001', '0.01']
 
 def get_row_setor(i):
-    return ['/setor', ((i - 1) // 10) + 1, 'Setor ' + str(i), '10000001', '0.01']
+    return ['/setor', ((i - 1) // QTD_ARMAZEM) + 1, 'Setor ' + str(i), '10000001', '0.01']
 
 def get_row_cliente(i):
-    return ['/cliente', ((i - 1) // 10) + 1, 'Cliente ' + str(i), '1000000' + str(i), '11911111111', '10000001']
+    return ['/cliente', ((i - 1) // QTD_ARMAZEM) + 1, 'Cliente ' + str(i), '1000000' + str(i), '11911111111', '10000001']
 
 def get_row_item(i):
     return ['/item', 'Item ' + str(i), i]
 
 def get_row_estoque(i):
-    return ['/estoque', ((i - 1) // 100) + 1, ((i - 1) % 100) + 1, '10']
+    return ['/estoque', ((i - 1) // QTD_ITEM) + 1, ((i - 1) % QTD_ITEM) + 1, '10']
 
 
 def gerar_dataset_armazem():
-    gerar_csv('Armazém', ['endpoint', 'nome', 'cep', 'taxa'], CAMINHO_DATASET + 'armazem', 1, get_row_armazem)
+    gerar_csv('Armazém', ['endpoint', 'nome', 'cep', 'taxa'], CAMINHO_DATASET + 'armazem', QTD_ARMAZEM, get_row_armazem)
 
 def gerar_dataset_setor():
     gerar_csv('Setor', ['endpoint', 'idArmazem', 'nome', 'cep', 'taxa'], CAMINHO_DATASET +  'setor', QTD_SETOR, get_row_setor)
@@ -86,10 +86,17 @@ def gerar_datasets():
 
 
 def get_row_pedido(i):
-    return ['/novo_pedido', 1, 1, 1, {'id':'1', 'quantidade':'5'}]
+    str_itens = '['
+    for j in range(((i - 1) % 5) + 1):
+        str_itens += f'{'{'}id:{(i + j) % QTD_ITEM}, quantidade:{5 if i % 2 == 0 else 10}{'}'},'
+    str_itens = str_itens[:-1]
+    str_itens += ']'
+    
+    # return ['/novo_pedido', i, {'id':'1', 'quantidade':'5'}]
+    return ['/novo_pedido', i, str_itens]
 
 def get_row_pagamento(i):
-    return ['/pagamento', '10001', 100 + i]
+    return ['/pagamento', '1000000' + str(i), 100 + i]
 
 def get_row_pedido_entregue(i):
     return ['/pedido_entregue', i]
@@ -98,11 +105,11 @@ def get_row_entrega(i):
     return ['/entrega', i]
 
 def get_row_nivel_estoque(i):
-    return ['/nivel_estoque', i, 1]
+    return ['/nivel_estoque', i]
 
 
 def gerar_transacao_pedido():
-    gerar_csv('Pedido', ['endpoint', 'idArmazem', 'idSetor', 'idCliente', 'itens'], CAMINHO_TRANSACAO + 'pedido', QTD_PEDIDO, get_row_pedido)
+    gerar_csv('Pedido', ['endpoint', 'idCliente', 'itens'], CAMINHO_TRANSACAO + 'pedido', QTD_PEDIDO, get_row_pedido)
 
 def gerar_transacao_pagamento():
     gerar_csv('Pagamento', ['endpoint', 'cnpj', 'valor'], CAMINHO_TRANSACAO + 'pagamento', QTD_PAGAMENTO, get_row_pagamento)
@@ -114,7 +121,7 @@ def gerar_transacao_entrega():
     gerar_csv('Entrega', ['endpoint', 'idPedido'], CAMINHO_TRANSACAO + 'entrega', QTD_ENTREGA, get_row_entrega)
 
 def gerar_transacao_nivel_estoque():
-    gerar_csv('Nível Estoque', ['endpoint', 'idArmazem', 'idSetor'], CAMINHO_TRANSACAO + 'nivel_estoque', QTD_NIVEL_ESTOQUE, get_row_nivel_estoque)
+    gerar_csv('Nível Estoque', ['endpoint', 'idSetor'], CAMINHO_TRANSACAO + 'nivel_estoque', QTD_NIVEL_ESTOQUE, get_row_nivel_estoque)
 
 def gerar_transacoes():
     print('Gerando transações...')
@@ -129,7 +136,6 @@ def gerar_transacoes():
 
 
 def main():
-    # gerar_datasets()
 
     # Simplificar o body das requisições
     # Mudar a estrutura pra branches
@@ -139,6 +145,8 @@ def main():
     # Salvar os resultados
     # Gerar os gráficos
     # Configurar os contêineres
+
+    # gerar_datasets()
     gerar_transacoes()
 
 if __name__ == '__main__':
