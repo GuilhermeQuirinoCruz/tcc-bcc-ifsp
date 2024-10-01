@@ -86,7 +86,14 @@ def gerar_datasets():
 
 
 def get_row_pedido(i):
-    return ['/novo_pedido', i, {'id':'1', 'quantidade':'5'}]
+    str_itens = '['
+    for j in range(((i - 1) % 5) + 1):
+        str_itens += f'{'{'}id:{(i + j) % QTD_ITEM}, quantidade:{5 if i % 2 == 0 else 10}{'}'},'
+    str_itens = str_itens[:-1]
+    str_itens += ']'
+    
+    # return ['/novo_pedido', i, {'id':'1', 'quantidade':'5'}]
+    return ['/novo_pedido', i, str_itens]
 
 def get_row_pagamento(i):
     return ['/pagamento', '1000000' + str(i), 100 + i]

@@ -2,15 +2,15 @@ import pandas
 import requests
 import json
 
-CSV_PATH = 'csv/'
-CHUNK_SIZE = 4
-LINK = 'http://localhost:3000/api'
+CAMINHO_CSV = 'csv/'
+TAMANHO_CHUNK = 4
+LINK_API = 'http://localhost:3000/api'
 
 def fazer_requisicoes(nome_arquivo):
-    for chunk in pandas.read_csv(CSV_PATH + nome_arquivo + '.csv', chunksize=CHUNK_SIZE):
+    for chunk in pandas.read_csv(CAMINHO_CSV + nome_arquivo + '.csv', chunksize=TAMANHO_CHUNK):
         for row in chunk.iterrows():
             parametros = json.loads(row[1].to_json())
-            endpoint = LINK + parametros['endpoint']
+            endpoint = LINK_API + parametros['endpoint']
             del parametros['endpoint']
 
             r = requests.post(endpoint, json=parametros)
