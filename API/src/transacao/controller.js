@@ -133,7 +133,7 @@ const pedidoEntregue = async (req, res) => {
 const entrega = async (req, res) => {
   const client = await pool.connect();
 
-  const idPedido = parseInt(req.params.id);
+  const { idPedido } = req.body;
 
   try {
     await client.query('BEGIN');

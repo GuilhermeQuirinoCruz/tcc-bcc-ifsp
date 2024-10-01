@@ -12,7 +12,7 @@ router.route('/pagamento')
 router.route('/nivel_estoque')
   .get(controller.nivelEstoque);
 
-router.route('/entrega/:id')
+router.route('/entrega')
   .post(controller.entrega);
 
 router.route('/pedido_entregue')
