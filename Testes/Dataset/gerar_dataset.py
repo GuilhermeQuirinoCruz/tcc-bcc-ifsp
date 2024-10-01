@@ -18,7 +18,7 @@ QTD_PEDIDO = QTD_CLIENTE
 QTD_PAGAMENTO = QTD_PEDIDO
 QTD_PEDIDO_ENTREGUE = QTD_PEDIDO
 QTD_ENTREGA = QTD_PEDIDO
-QTD_NIVEL_ESTOQUE = QTD_ESTOQUE
+QTD_NIVEL_ESTOQUE = QTD_SETOR
 
 
 # Geral
@@ -59,7 +59,7 @@ def get_row_estoque(i):
 
 
 def gerar_dataset_armazem():
-    gerar_csv('Armazém', ['endpoint', 'nome', 'cep', 'taxa'], CAMINHO_DATASET + 'armazem', 1, get_row_armazem)
+    gerar_csv('Armazém', ['endpoint', 'nome', 'cep', 'taxa'], CAMINHO_DATASET + 'armazem', QTD_ARMAZEM, get_row_armazem)
 
 def gerar_dataset_setor():
     gerar_csv('Setor', ['endpoint', 'idArmazem', 'nome', 'cep', 'taxa'], CAMINHO_DATASET +  'setor', QTD_SETOR, get_row_setor)
@@ -129,7 +129,6 @@ def gerar_transacoes():
 
 
 def main():
-    # gerar_datasets()
 
     # Simplificar o body das requisições
     # Mudar a estrutura pra branches
@@ -139,6 +138,8 @@ def main():
     # Salvar os resultados
     # Gerar os gráficos
     # Configurar os contêineres
+
+    # gerar_datasets()
     gerar_transacoes()
 
 if __name__ == '__main__':
