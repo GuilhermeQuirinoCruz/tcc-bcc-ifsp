@@ -32,12 +32,15 @@ def gerar_csv(nome, colunas, caminho, qtd, get_row):
 
     df = pandas.DataFrame(columns=colunas)
     df.to_csv(CAMINHO, index=False)
+
+    linhas = []
     for i in range(qtd):
-        df.loc[i % TAMANHO_LOTE] = get_row(i + 1)
+        linhas.append(get_row(i + 1))
 
         if i % TAMANHO_LOTE == 0 or i == qtd - 1:
+            df = pandas.DataFrame(linhas, columns=colunas)
             df.to_csv(CAMINHO, mode='a', header=False, index=False)
-            df.drop(df.index, inplace=True)
+            linhas.clear()
 
     print('CSV [' + nome + '] gerado')
 
@@ -150,7 +153,7 @@ def main():
     # Gerar os gráficos
     # Configurar os contêineres
 
-    # gerar_datasets()
+    gerar_datasets()
     gerar_transacoes()
 
 if __name__ == '__main__':
