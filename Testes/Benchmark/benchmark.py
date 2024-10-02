@@ -1,13 +1,14 @@
 import pandas
 import requests
 import json
+import time
 
 CAMINHO_CSV = 'csv/'
 TAMANHO_CHUNK = 10
 LINK_API = 'http://localhost:3000/api/transacao/'
 
-COLUNAS = ['requisicao', 'tempo(ms)']
-CAMINHO_RESULTADO = CAMINHO_CSV + 'resultado.csv'
+COLUNAS = ['requisicao', 'tempo(s)']
+CAMINHO_RESULTADO = CAMINHO_CSV + 'transacao.csv'
 
 def fazer_requisicoes(nome_arquivo):
     ENDPOINT = LINK_API + nome_arquivo
@@ -21,12 +22,16 @@ def fazer_requisicoes(nome_arquivo):
                 parametros['itens'] = parametros['itens'].replace('id:', f'"id":').replace('quantidade', f'"quantidade"')
                 parametros['itens'] = json.loads(parametros['itens'])
             
+            inicio = time.perf_counter()
+
             if REQUISICAO_GET:
                 requests.get(ENDPOINT, json=parametros)
             else:
                 requests.post(ENDPOINT, json=parametros)
             
-            resultados.append([nome_arquivo, 10])
+            fim = time.perf_counter()
+            
+            resultados.append([nome_arquivo, fim - inicio])
         
         df = pandas.DataFrame(resultados, columns=COLUNAS)
         df.to_csv(CAMINHO_RESULTADO, mode='a', header=False, index=False)
