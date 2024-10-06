@@ -6,7 +6,7 @@ const PORT = 3000;
 app.use(express.json());
 
 app.get('/', (req, res) => {
-  res.send('Teste do PostgreSQL');
+  res.send('Teste do MongoDB');
 });
 
 // Routes
@@ -22,18 +22,18 @@ app.use('/api/setor', setorRoutes);
 const clienteRoutes = require('./src/cliente/routes');
 app.use('/api/cliente', clienteRoutes);
 
-const pedidoRoutes = require('./src/pedido/routes');
-app.use('/api/pedido', pedidoRoutes);
+// const pedidoRoutes = require('./src/pedido/routes');
+// app.use('/api/pedido', pedidoRoutes);
 
-const estoqueRoutes = require('./src/estoque/routes');
-app.use('/api/estoque', estoqueRoutes);
+// const estoqueRoutes = require('./src/estoque/routes');
+// app.use('/api/estoque', estoqueRoutes);
 
-const itemPedidoRoutes = require('./src/item_pedido/routes');
-app.use('/api/item_pedido', itemPedidoRoutes);
+// const itemPedidoRoutes = require('./src/item_pedido/routes');
+// app.use('/api/item_pedido', itemPedidoRoutes);
 
-// Transactions
-const transacaoRouter = require('./src/transacao/routes');
-app.use('/api/transacao', transacaoRouter);
+// // Transactions
+// const transacaoRouter = require('./src/transacao/routes');
+// app.use('/api/transacao', transacaoRouter);
 
 app.listen(PORT, () => {
   console.log(`APP inicializado na porta ${PORT}`);

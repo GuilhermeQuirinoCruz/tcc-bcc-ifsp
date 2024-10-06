@@ -1,5 +1,5 @@
 {
-  "name": "api-postgresql",
+  "name": "api",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
@@ -10,6 +10,6 @@
   "description": "",
   "dependencies": {
     "express": "^4.19.2",
-    "pg": "^8.12.0"
+    "mongodb": "^6.9.0"
   }
 }
