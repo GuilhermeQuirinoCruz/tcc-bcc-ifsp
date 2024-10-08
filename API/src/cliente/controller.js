@@ -4,15 +4,18 @@ const getClientes = async (req, res) => {
   try {
     const clientes = await database.collection('armazem')
       .aggregate([
-        { $unwind: '$setor' },
-        { $unwind: '$setor.cliente' },
+        { $unwind: '$setores' },
+        { $unwind: '$setores.clientes' },
         {
           $project: {
-            _id: '$setor.cliente._id',
-            nome: '$setor.cliente.nome',
-            cnpj: '$setor.cliente.cnpj',
-            telefone: '$setor.cliente.telefone',
-            cep: '$setor.cliente.cep'
+            _id: '$setores.clientes._id',
+            nome: '$setores.clientes.nome',
+            cnpj: '$setores.clientes.cnpj',
+            telefone: '$setores.clientes.telefone',
+            cep: '$setores.clientes.cep',
+
+            pedidos: '$setores.clientes.pedidos',
+            pagamentos: '$setores.clientes.pagamentos'
           }
         }
       ])
@@ -31,17 +34,17 @@ const getClienteById = async (req, res) => {
     const cliente = await database.collection('armazem')
       .aggregate(
         [
-          { $match: { 'setor.cliente._id': idCliente } },
-          { $unwind: '$setor' },
-          { $unwind: '$setor.cliente' },
-          { $match: { 'setor.cliente._id': idCliente } },
+          { $match: { 'setores.clientes._id': idCliente } },
+          { $unwind: '$setores' },
+          { $unwind: '$setores.clientes' },
+          { $match: { 'setores.clientes._id': idCliente } },
           {
             $project: {
-              _id: '$setor.cliente._id',
-              nome: '$setor.cliente.nome',
-              cnpj: '$setor.cliente.cnpj',
-              telefone: '$setor.cliente.telefone',
-              cep: '$setor.cliente.cep'
+              _id: '$setores.clientes._id',
+              nome: '$setores.clientes.nome',
+              cnpj: '$setores.clientes.cnpj',
+              telefone: '$setores.clientes.telefone',
+              cep: '$setores.clientes.cep'
             }
           }
         ]
@@ -64,7 +67,7 @@ const insertCliente = async (req, res) => {
 
       const armazem = await database.collection('armazem')
         .findOne(
-          { 'setor._id': idSetor },
+          { 'setores._id': idSetor },
           { projection: { _id: 1 } }
         );
 
@@ -72,11 +75,11 @@ const insertCliente = async (req, res) => {
         .updateOne(
           {
             _id: armazem._id,
-            'setor._id': idSetor
+            'setores._id': idSetor
           },
           {
             $push: {
-              'setor.$.cliente': {
+              'setores.$.clientes': {
                 _id: idCliente,
                 nome: nome,
                 cnpj: cnpj,
@@ -105,12 +108,12 @@ const updateCliente = async (req, res) => {
     const armazem = await database.collection('armazem')
       .aggregate(
         [
-          { $match: { 'setor.cliente._id': idCliente } },
-          { $unwind: '$setor' },
-          { $match: { 'setor.cliente._id': idCliente } },
+          { $match: { 'setores.clientes._id': idCliente } },
+          { $unwind: '$setores' },
+          { $match: { 'setores.clientes._id': idCliente } },
           {
             $project: {
-              idSetor: '$setor._id',
+              idSetor: '$setores._id',
             }
           }
         ]
@@ -121,15 +124,15 @@ const updateCliente = async (req, res) => {
       .updateOne(
         {
           _id: armazem._id,
-          'setor._id': armazem.idSetor,
-          'setor.cliente._id': idCliente
+          'setores._id': armazem.idSetor,
+          'setores.clientes._id': idCliente
         },
         {
           $set: {
-            'setor.$.cliente.$.nome': nome,
-            'setor.$.cliente.$.cnpj': cnpj,
-            'setor.$.cliente.$.telefone': telefone,
-            'setor.$.cliente.$.cep': cep,
+            'setores.$.clientes.$.nome': nome,
+            'setores.$.clientes.$.cnpj': cnpj,
+            'setores.$.clientes.$.telefone': telefone,
+            'setores.$.clientes.$.cep': cep,
           }
         }
       );
@@ -147,12 +150,12 @@ const deleteCliente = async (req, res) => {
     const armazem = await database.collection('armazem')
       .aggregate(
         [
-          { $match: { 'setor.cliente._id': idCliente } },
-          { $unwind: '$setor' },
-          { $match: { 'setor.cliente._id': idCliente } },
+          { $match: { 'setores.clientes._id': idCliente } },
+          { $unwind: '$setores' },
+          { $match: { 'setores.clientes._id': idCliente } },
           {
             $project: {
-              idSetor: '$setor._id',
+              idSetor: '$setores._id',
             }
           }
         ]
@@ -163,10 +166,10 @@ const deleteCliente = async (req, res) => {
       .updateOne(
         {
           _id: armazem._id,
-          'setor._id': armazem.idSetor
+          'setores._id': armazem.idSetor
         },
         {
-          $pull: { setor: { cliente: { $elemMatch: { _id: idCliente } } } }
+          $pull: { setores: { clientes: { $elemMatch: { _id: idCliente } } } }
         });
 
     res.status(200).json({ id: idCliente });

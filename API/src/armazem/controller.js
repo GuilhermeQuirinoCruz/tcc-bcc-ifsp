@@ -4,7 +4,10 @@ const getArmazens = async (req, res) => {
   try {
     const armazens = await database.collection('armazem')
       .find({})
-      .project({ setor: 0 })
+      .project({
+        setores: 0,
+        estoque: 0
+      })
       .toArray();
 
     res.status(200).json(armazens);
@@ -21,7 +24,7 @@ const getArmazemById = async (req, res) => {
       },
         {
           projection: {
-            setor: 0
+            setores: 0
           }
         });
 
@@ -45,7 +48,7 @@ const insertArmazem = async (req, res) => {
           nome: nome,
           cep: cep,
           taxa: taxa,
-          setor: []
+          setores: []
         });
 
       res.status(201).json(req.body);

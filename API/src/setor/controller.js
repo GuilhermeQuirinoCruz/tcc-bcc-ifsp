@@ -5,13 +5,13 @@ const getSetores = async (req, res) => {
     const setores = await database.collection('armazem')
       .aggregate(
         [
-          { $unwind: '$setor' },
+          { $unwind: '$setores' },
           {
             $project: {
-              _id: '$setor._id',
-              nome: '$setor.nome',
-              cep: '$setor.cep',
-              taxa: '$setor.taxa',
+              _id: '$setores._id',
+              nome: '$setores.nome',
+              cep: '$setores.cep',
+              taxa: '$setores.taxa',
             }
           }
         ]
@@ -31,15 +31,15 @@ const getSetorById = async (req, res) => {
     const setor = await database.collection('armazem')
       .aggregate(
         [
-          { $match: { 'setor._id': idSetor } },
-          { $unwind: '$setor' },
-          { $match: { 'setor._id': idSetor } },
+          { $match: { 'setores._id': idSetor } },
+          { $unwind: '$setores' },
+          { $match: { 'setores._id': idSetor } },
           {
             $project: {
-              _id: '$setor._id',
-              nome: '$setor.nome',
-              cep: '$setor.cep',
-              taxa: '$setor.taxa'
+              _id: '$setores._id',
+              nome: '$setores.nome',
+              cep: '$setores.cep',
+              taxa: '$setores.taxa'
             }
           }
         ]
@@ -65,7 +65,7 @@ const insertSetor = async (req, res) => {
           { _id: idArmazem },
           {
             $push: {
-              setor: {
+              setores: {
                 _id: id,
                 nome: nome,
                 cep: cep,
@@ -91,7 +91,7 @@ const updateSetor = async (req, res) => {
   try {
     const armazem = await database.collection('armazem')
       .findOne(
-        { 'setor._id': idSetor },
+        { 'setores._id': idSetor },
         { projection: { _id: 1 } }
       );
 
@@ -99,13 +99,13 @@ const updateSetor = async (req, res) => {
       .updateOne(
         {
           _id: armazem._id,
-          'setor._id': idSetor
+          'setores._id': idSetor
         },
         {
           $set: {
-            'setor.$.nome': nome,
-            'setor.$.cep': cep,
-            'setor.$.taxa': taxa
+            'setores.$.nome': nome,
+            'setores.$.cep': cep,
+            'setores.$.taxa': taxa
           }
         }
       );
@@ -122,14 +122,14 @@ const deleteSetor = async (req, res) => {
   try {
     const armazem = await database.collection('armazem')
       .findOne(
-        { 'setor._id': idSetor },
+        { 'setores._id': idSetor },
         { projection: { _id: 1 } }
       );
 
     await database.collection('armazem')
       .updateOne(
         { _id: armazem._id },
-        { $pull: { setor: { _id: idSetor } } }
+        { $pull: { setores: { _id: idSetor } } }
       );
 
     res.status(200).json({ id: idSetor });
