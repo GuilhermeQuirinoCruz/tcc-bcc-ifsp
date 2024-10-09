@@ -12,6 +12,7 @@ const getSetores = async (req, res) => {
               nome: '$setores.nome',
               cep: '$setores.cep',
               taxa: '$setores.taxa',
+              saldo: '$setores.saldo'
             }
           }
         ]
@@ -39,7 +40,8 @@ const getSetorById = async (req, res) => {
               _id: '$setores._id',
               nome: '$setores.nome',
               cep: '$setores.cep',
-              taxa: '$setores.taxa'
+              taxa: '$setores.taxa',
+              saldo: '$setores.saldo'
             }
           }
         ]
@@ -70,7 +72,8 @@ const insertSetor = async (req, res) => {
                 nome: nome,
                 cep: cep,
                 taxa: taxa,
-                cliente: []
+                saldo: 0.0,
+                clientes: []
               }
             }
           });
@@ -105,7 +108,8 @@ const updateSetor = async (req, res) => {
           $set: {
             'setores.$.nome': nome,
             'setores.$.cep': cep,
-            'setores.$.taxa': taxa
+            'setores.$.taxa': taxa,
+            'setores.$.saldo': saldo
           }
         }
       );

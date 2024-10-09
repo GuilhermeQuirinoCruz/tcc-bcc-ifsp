@@ -6,6 +6,45 @@ const novoPedido = async (req, res) => {
 
   try {
     await session.withTransaction(async () => {
+      let totalPedido = 0;
+      for (const item of itens) {
+        const precoUnitario = (await database.collection('item')
+          .findOne(
+            {
+              _id: item.id
+            },
+            {
+              projection: {
+                _id: 0,
+                precoUnitario: 1
+              }
+            }
+          )).precoUnitario;
+
+        totalPedido += precoUnitario * item.quantidade;
+      }
+
+      const taxa = (await database.collection('armazem')
+        .aggregate(
+          [
+            { $match: { 'setores.clientes._id': idCliente } },
+            { $unwind: '$setores' },
+            { $unwind: '$setores.clientes' },
+            { $match: { 'setores.clientes._id': idCliente } },
+            {
+              $project: {
+                _id: 0,
+                taxa: {
+                  $add: ['$taxa', '$setores.taxa']
+                }
+              }
+            }
+          ]
+        )
+        .next()).taxa;
+
+      totalPedido *= taxa;
+
       const idPedido = await getNextId('pedido');
 
       await database.collection('armazem')
@@ -15,8 +54,13 @@ const novoPedido = async (req, res) => {
             $push: {
               'setores.$[i].clientes.$[j].pedidos': {
                 _id: idPedido,
+                data: new Date(),
+                entregue: false,
                 itens: itens
               }
+            },
+            $inc: {
+              'setores.$[i].clientes.$[j].saldo': -totalPedido
             }
           },
           {
@@ -50,9 +94,14 @@ const pagamento = async (req, res) => {
           {
             $push: {
               'setores.$[i].clientes.$[j].pagamentos': {
-                idPagamento: idPagamento,
+                _id: idPagamento,
+                data: new Date(),
                 valor: valor
               }
+            },
+            $inc: {
+              'setores.$[i].clientes.$[j].saldo': valor,
+              'setores.$[i].saldo': valor
             }
           },
           {
@@ -103,12 +152,32 @@ const entrega = async (req, res) => {
 }
 
 const pedidoEntregue = async (req, res) => {
+  const { cnpj } = req.body;
   const session = client.startSession();
 
   try {
     await session.withTransaction(async () => {
 
-      res.status(200).json(req.body);
+      const pedido = await database.collection('armazem')
+        .aggregate(
+          [
+            { $match: { 'setores.clientes.cnpj': cnpj } },
+            { $unwind: '$setores' },
+            { $unwind: '$setores.clientes' },
+            { $match: { 'setores.clientes.cnpj': cnpj } },
+            { $unwind: '$setores.clientes.pedidos' },
+            { $sort: { 'setores.clientes.pedidos._id': -1 } },
+            {
+              $project: {
+                _id: 0,
+                entregue: '$setores.clientes.pedidos.entregue'
+              }
+            }
+          ]
+        )
+        .next();
+
+      res.status(200).json({ entregue: pedido.entregue });
     });
   } catch (error) {
     throw error;

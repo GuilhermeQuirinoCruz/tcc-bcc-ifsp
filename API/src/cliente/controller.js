@@ -13,6 +13,8 @@ const getClientes = async (req, res) => {
             cnpj: '$setores.clientes.cnpj',
             telefone: '$setores.clientes.telefone',
             cep: '$setores.clientes.cep',
+            dataRegistro: '$setores.clientes.dataRegistro',
+            saldo: '$setores.clientes.saldo',
 
             pedidos: '$setores.clientes.pedidos',
             pagamentos: '$setores.clientes.pagamentos'
@@ -44,7 +46,9 @@ const getClienteById = async (req, res) => {
               nome: '$setores.clientes.nome',
               cnpj: '$setores.clientes.cnpj',
               telefone: '$setores.clientes.telefone',
-              cep: '$setores.clientes.cep'
+              cep: '$setores.clientes.cep',
+              dataRegistro: '$setores.clientes.dataRegistro',
+              saldo: '$setores.clientes.saldo'
             }
           }
         ]
@@ -85,6 +89,8 @@ const insertCliente = async (req, res) => {
                 cnpj: cnpj,
                 telefone: telefone,
                 cep: cep,
+                dataRegistro: new Date(),
+                saldo: 0.0,
                 pedidos: [],
                 pagamentos: []
               }
@@ -133,6 +139,7 @@ const updateCliente = async (req, res) => {
             'setores.$.clientes.$.cnpj': cnpj,
             'setores.$.clientes.$.telefone': telefone,
             'setores.$.clientes.$.cep': cep,
+            'setores.$.clientes.$.saldo': saldo
           }
         }
       );
