@@ -137,12 +137,94 @@ const nivelEstoque = async (req, res) => {
 }
 
 const entrega = async (req, res) => {
+  const { idPedido } = req.body;
   const session = client.startSession();
 
   try {
     await session.withTransaction(async () => {
+      const pedido = await database.collection('armazem')
+        .aggregate(
+          [
+            { $match: { 'setores.clientes.pedidos._id': idPedido } },
+            { $unwind: '$setores' },
+            { $unwind: '$setores.clientes' },
+            { $unwind: '$setores.clientes.pedidos' },
+            { $match: { 'setores.clientes.pedidos._id': idPedido } },
+            {
+              $project: {
+                _id: 0,
+                idArmazem: '$_id',
+                idCliente: '$setores.clientes._id',
+                itens: '$setores.clientes.pedidos.itens'
+              }
+            }
+          ]
+        )
+        .next();
 
-      res.status(200).json(req.body);
+      let estoqueSuficiente = true;
+      for (item of pedido.itens) {
+        const qtdEstoque = (await database.collection('armazem')
+          .aggregate(
+            [
+              { $match: { 'estoque.idItem': item.id } },
+              { $unwind: '$estoque' },
+              { $match: { 'estoque.idItem': item.id } },
+              {
+                $project: {
+                  _id: 0,
+                  quantidade: '$estoque.quantidade'
+                }
+              }
+            ]
+          )
+          .next()).quantidade;
+
+        if (qtdEstoque < item.quantidade) {
+          estoqueSuficiente = false;
+          break;
+        }
+      }
+
+      if (!estoqueSuficiente) {
+        res.status(200).json('Estoque insuficiente');
+      } else {
+        for (item of pedido.itens) {
+          await database.collection('armazem')
+            .updateOne(
+              { '_id': pedido.idArmazem },
+              {
+                $inc: {
+                  'estoque.$[i].quantidade': -item.quantidade
+                }
+              },
+              {
+                arrayFilters: [
+                  { 'i.idItem': item.id }
+                ]
+              }
+            );
+        }
+
+        await database.collection('armazem')
+          .updateOne(
+            { '_id': pedido.idArmazem },
+            {
+              $set: {
+                'setores.$[i].clientes.$[j].pedidos.$[k].entregue': true
+              }
+            },
+            {
+              arrayFilters: [
+                { 'i.clientes._id': pedido.idCliente },
+                { 'j._id': pedido.idCliente },
+                { 'k._id': idPedido }
+              ]
+            }
+          );
+
+        res.status(200).json(req.body);
+      }
     });
   } catch (error) {
     throw error;

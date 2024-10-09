@@ -118,34 +118,29 @@ const insertEstoque = async (req, res) => {
 };
 
 const updateEstoque = async (req, res) => {
-  const idSetor = parseInt(req.params.id);
-  const { nome, cep, taxa } = req.body;
+  const { idArmazem, idItem, quantidade } = req.body;
+  const session = client.startSession();
 
   try {
-    const armazem = await database.collection('armazem')
-      .findOne(
-        { 'setores._id': idSetor },
-        { projection: { _id: 1 } }
-      );
+    await session.withTransaction(async () => {
+      await database.collection('armazem')
+        .updateOne(
+          {
+            _id: idArmazem,
+            'estoque.idItem': idItem
+          },
+          {
+            $set: {
+              'estoque.$.quantidade': quantidade
+            }
+          });
 
-    await database.collection('armazem')
-      .updateOne(
-        {
-          _id: armazem._id,
-          'setores._id': idSetor
-        },
-        {
-          $set: {
-            'setores.$.nome': nome,
-            'setores.$.cep': cep,
-            'setores.$.taxa': taxa
-          }
-        }
-      );
-
-    res.status(200).json(req.body);
+      res.status(200).json(req.body);
+    });
   } catch (error) {
     throw error;
+  } finally {
+    session.endSession();
   }
 };
 
