@@ -122,12 +122,63 @@ const pagamento = async (req, res) => {
 }
 
 const nivelEstoque = async (req, res) => {
+  const { idSetor } = req.body;
   const session = client.startSession();
 
   try {
     await session.withTransaction(async () => {
+      const itens = await database.collection('armazem')
+        .aggregate(
+          [
+            { $match: { 'setores._id': idSetor } },
+            { $unwind: '$setores' },
+            { $match: { 'setores._id': idSetor } },
+            { $unwind: '$setores.clientes' },
+            { $unwind: '$setores.clientes.pedidos' },
+            { $unwind: '$setores.clientes.pedidos.itens' },
+            {
+              $project: {
+                _id: 0,
+                idItem: '$setores.clientes.pedidos.itens.id',
+                quantidade: '$setores.clientes.pedidos.itens.quantidade',
+              }
+            },
+            {
+              $group: {
+                _id: '$idItem',
+                quantidade: { $sum: '$quantidade' }
+              }
+            }
+          ]
+        ).toArray();
 
-      res.status(200).json(req.body);
+      let itensEmFalta = [];
+      for (item of itens) {
+        const qtdEstoque = (await database.collection('armazem')
+          .aggregate(
+            [
+              { $match: { 'setores._id': idSetor } },
+              { $unwind: '$estoque' },
+              { $match: { 'estoque.idItem': item._id } },
+              {
+                $project: {
+                  _id: 0,
+                  quantidade: '$estoque.quantidade'
+                }
+              }
+            ]
+          )
+          .next()).quantidade;
+
+        if (qtdEstoque < item.quantidade) {
+          itensEmFalta.push({
+            idItem: item._id,
+            quantidade: item.quantidade - qtdEstoque
+          });
+        }
+      }
+
+      res.status(200).json(itensEmFalta);
     });
   } catch (error) {
     throw error;
@@ -167,7 +218,8 @@ const entrega = async (req, res) => {
         const qtdEstoque = (await database.collection('armazem')
           .aggregate(
             [
-              { $match: { 'estoque.idItem': item.id } },
+              { $match: { _id: pedido.idArmazem } },
+              // { $match: { 'estoque.idItem': item.id } },
               { $unwind: '$estoque' },
               { $match: { 'estoque.idItem': item.id } },
               {
