@@ -143,16 +143,6 @@ def gerar_transacoes():
 
 
 def main():
-
-    # Simplificar o body das requisições
-    # Mudar a estrutura pra branches
-    # Gerar as transações certinho
-    # Fazer o benchmark
-    # Começar a medir os tempos
-    # Salvar os resultados
-    # Gerar os gráficos
-    # Configurar os contêineres
-
     gerar_datasets()
     gerar_transacoes()
 
