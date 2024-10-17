@@ -1,0 +1,23 @@
+services:
+  database:
+    container_name: db-postgres
+    build: ./PostgreSQL/
+    ports:
+      - "5432:5432"
+    volumes:
+      - db:/var/lib/postgres
+    restart: always
+
+  api:
+    container_name: api-postgres
+    build:
+      context: ../API/
+      dockerfile: ../Docker/API/Dockerfile
+    ports:
+      - "3000:3000"
+    restart: always
+    depends_on:
+      - database
+
+volumes: 
+  db:
