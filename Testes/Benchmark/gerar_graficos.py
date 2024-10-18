@@ -1,10 +1,9 @@
 import pandas
-import numpy
 
 import matplotlib.pyplot as plot
 from matplotlib import colors
-from matplotlib.ticker import PercentFormatter
 from matplotlib.cbook import boxplot_stats
+
 
 CAMINHO_CSV = 'csv/'
 TITULOS = {
@@ -15,18 +14,18 @@ TITULOS = {
     'estoque': 'Estoque'
 }
 
-def gerar_graficos(nome_arquivo, tabelas):
+
+def gerar_graficos(nome_arquivo, requisicoes):
     print('Gerando...')
     df = pandas.read_csv(CAMINHO_CSV + nome_arquivo + '.csv')
-    for nome_tabela in tabelas:
-    # for nome_tabela in ['armazem']:
-        df_tabela = df.loc[df['tabela'] == nome_tabela]
+    for requisicao in requisicoes:
+        df_tabela = df.loc[df['tabela'] == requisicao]
         tempos = df_tabela['tempo(s)'].mul(1000)
 
         # Histograma
         fig, ax = plot.subplots(1, 1, sharey=True, tight_layout=True)
 
-        ax.set_title(TITULOS[nome_tabela])
+        ax.set_title(TITULOS[requisicao])
         ax.set_xlabel('Tempo(ms)')
         ax.set_ylabel('Operações')
 
@@ -36,7 +35,7 @@ def gerar_graficos(nome_arquivo, tabelas):
         # BoxPlot
         fig, ax = plot.subplots()
 
-        ax.set_title(TITULOS[nome_tabela])
+        ax.set_title(TITULOS[requisicao])
         ax.set_ylabel('Tempo(ms)')
         ax.tick_params(axis='y', which='major', pad=50)
 
@@ -61,12 +60,13 @@ def gerar_graficos(nome_arquivo, tabelas):
 
         plot.show()
 
+
 def gerar_graficos_carregamento():
-    gerar_graficos('carregamento', ['armazem', 'setor', 'ciente', 'item', 'estoque'])
+    gerar_graficos('carregamento', ['armazem', 'setor', 'cliente', 'item', 'estoque'])
 
 
 def gerar_graficos_transacao():
-    print('Gerando...')
+    gerar_graficos('transacao', ['novo_pedido', 'pagamento', 'pedido_entregue', 'entrega', 'nivel_estoque'])
 
 
 def main():
