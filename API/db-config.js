@@ -1,6 +1,6 @@
 const mongodb = require('mongodb');
 
-const uri = 'mongodb://localhost:27017';
+const uri = 'mongodb://db-mongo:27017';
 
 const opcoes = {
   auth: {
@@ -11,7 +11,7 @@ const opcoes = {
 
 const client = new mongodb.MongoClient(uri, opcoes);
 
-const database = client.db('tcc');
+const database = client.db('tpc');
 
 const getNextId = async (collection) => {
   const id = await database.collection('counters')

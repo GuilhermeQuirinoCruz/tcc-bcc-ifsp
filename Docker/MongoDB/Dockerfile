@@ -1,0 +1,6 @@
+FROM mongodb/mongodb-community-server:latest
+WORKDIR /db
+ENV MONGODB_INITDB_ROOT_USERNAME=root
+ENV MONGODB_INITDB_ROOT_PASSWORD=senha
+
+EXPOSE 27017

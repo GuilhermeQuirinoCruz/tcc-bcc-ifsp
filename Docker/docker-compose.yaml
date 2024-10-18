@@ -1,0 +1,23 @@
+services:
+  database:
+    container_name: db-mongo
+    build: ./MongoDB/
+    ports:
+      - "27017:27017"
+    volumes:
+      - db:/var/lib/mongodb
+    restart: always
+
+  api:
+    container_name: api-mongodb
+    build:
+      context: ../API/
+      dockerfile: ../Docker/API/Dockerfile
+    ports:
+      - "3000:3000"
+    restart: always
+    depends_on:
+      - database
+
+volumes: 
+  db:
