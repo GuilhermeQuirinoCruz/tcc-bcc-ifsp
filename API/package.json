@@ -1,5 +1,5 @@
 {
-  "name": "api-postgresql",
+  "name": "api-redis",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
@@ -9,6 +9,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "express": "^4.19.2"
+    "express": "^4.19.2",
+    "redis": "^4.7.0"
   }
 }
