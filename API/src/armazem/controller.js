@@ -37,20 +37,23 @@ const getArmazemById = async (req, res) => {
 const insertArmazem = async (req, res) => {
   const { nome, cep, taxa } = req.body;
 
+  const multi = client.MULTI();
   try {
     const id = await getNextId('armazem');
     const key = 'armazem:' + id;
 
-    await client.HSET(key, {
-      nome: nome,
-      cep: cep,
-      taxa: parseFloat(taxa)
-    });
-
-    await client.SADD('set:armazem', id.toString());
+    await multi
+      .HSET(key, {
+        nome: nome,
+        cep: cep,
+        taxa: parseFloat(taxa)
+      })
+      .SADD('set:armazem', id.toString())
+      .EXEC();
 
     res.status(201).json(req.body);
   } catch (error) {
+    await client.DISCARD();
     console.log(error);
   }
 };
@@ -76,13 +79,17 @@ const updateArmazem = async (req, res) => {
 
 const deleteArmazem = async (req, res) => {
   const id = req.params.id;
-
+  
+  const multi = client.MULTI();
   try {
-    await client.SREM('set:armazem', id);
-    await client.DEL('armazem:' + id);
+    await multi
+      .SREM('set:armazem', id)
+      .DEL('armazem:' + id)
+      .EXEC();
 
     res.status(200).json({ id: id });
   } catch (error) {
+    multi.DISCARD();
     console.log(error);
   }
 };

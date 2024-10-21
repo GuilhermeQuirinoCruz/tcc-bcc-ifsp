@@ -41,15 +41,18 @@ const insertItem = async (req, res) => {
     const id = await getNextId('item');
     const key = 'item:' + id;
 
-    await client.HSET(key, {
-      nome: nome,
-      preco_unitario: parseFloat(precoUnitario)
-    });
-
-    await client.SADD('set:item', id.toString());
+    const multi = client.MULTI();
+    await multi
+      .HSET(key, {
+        nome: nome,
+        preco_unitario: parseFloat(precoUnitario)
+      })
+      .SADD('set:item', id.toString())
+      .EXEC();
 
     res.status(201).json(req.body);
   } catch (error) {
+    multi.DISCARD();
     console.log(error);
   }
 };
@@ -75,12 +78,16 @@ const updateItem = async (req, res) => {
 const deleteItem = async (req, res) => {
   const id = req.params.id;
 
+  const multi = client.MULTI();
   try {
-    await client.SREM('set:item', id);
-    await client.DEL('item:' + id);
+    await multi
+      .DEL('item:' + id)
+      .SREM('set:item', id)
+      .EXEC();
 
     res.status(200).json({ id: id });
   } catch (error) {
+    multi.DISCARD();
     console.log(error);
   }
 };

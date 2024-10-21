@@ -37,21 +37,25 @@ const getSetorById = async (req, res) => {
 const insertSetor = async (req, res) => {
   const { idArmazem, nome, cep, taxa } = req.body;
 
+  const multi = client.MULTI();
   try {
     const id = await getNextId('setor');
     const key = 'setor:' + id;
 
-    await client.HSET(key, {
-      id_armazem: idArmazem,
-      nome: nome,
-      cep: cep,
-      taxa: parseFloat(taxa)
-    });
-
-    await client.SADD('set:setor', id.toString());
+    await multi
+      .HSET(key, {
+        id_armazem: idArmazem,
+        nome: nome,
+        cep: cep,
+        taxa: parseFloat(taxa),
+        saldo: 0
+      })
+      .SADD('set:setor', id.toString())
+      .EXEC();
 
     res.status(201).json(req.body);
   } catch (error) {
+    multi.DISCARD();
     console.log(error);
   }
 };
@@ -78,12 +82,16 @@ const updateSetor = async (req, res) => {
 const deleteSetor = async (req, res) => {
   const id = req.params.id;
 
+  const multi = client.MULTI();
   try {
-    await client.SREM('set:setor', id);
-    await client.DEL('setor:' + id);
+    await multi
+      .SREM('set:setor', id)
+      .DEL('setor:' + id)
+      .EXEC();
 
     res.status(200).json({ id: id });
   } catch (error) {
+    multi.DISCARD();
     console.log(error);
   }
 };

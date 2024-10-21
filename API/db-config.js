@@ -8,14 +8,7 @@ const connect = async() => {
 
 const getNextId = async (tabela) => {
   try {
-    let id = await client.get(tabela + ':id');
-    if (!id) {
-      id = 1;
-    }
-
-    await client.set(tabela + ':id', parseInt(id) + 1);
-  
-    return parseInt(id);
+    return parseInt(await client.INCR(tabela + ':id'));
   } catch (error) {
     console.log(error);
   }
