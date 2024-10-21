@@ -8,7 +8,7 @@ TAMANHO_CHUNK = 4
 LINK_API = 'http://localhost:3000/api/'
 
 COLUNAS = ['tabela', 'tempo(s)']
-CAMINHO_RESULTADO = '../Benchmark/csv/carregamento.csv'
+CAMINHO_RESULTADO = '../Gráficos/resultados/carregamento.csv'
 
 def fazer_requisicoes(nome_arquivo):
     ENDPOINT = LINK_API + nome_arquivo

@@ -8,7 +8,7 @@ TAMANHO_CHUNK = 10
 LINK_API = 'http://localhost:3000/api/transacao/'
 
 COLUNAS = ['requisicao', 'tempo(s)']
-CAMINHO_RESULTADO = CAMINHO_CSV + 'transacao.csv'
+CAMINHO_RESULTADO = '../Gráficos/resultados/transacao.csv'
 
 def fazer_requisicoes(nome_arquivo):
     ENDPOINT = LINK_API + nome_arquivo
