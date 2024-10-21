@@ -2,7 +2,6 @@ import pandas
 import numpy
 
 import matplotlib.pyplot as plot
-# from matplotlib import colors
 from matplotlib.cbook import boxplot_stats
 
 

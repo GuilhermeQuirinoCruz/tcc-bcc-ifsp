@@ -2,7 +2,6 @@ import pandas
 import numpy
 
 import matplotlib.pyplot as plot
-# from matplotlib import colors
 from matplotlib.cbook import boxplot_stats
 
 
@@ -21,79 +20,63 @@ TITULOS = {
 }
 
 
-def gerar_boxplots(nomes_arquivos, requisicao, nome_chave):
+def gerar_boxplots(nomes_arquivos, requisicao, nome_chave, legendas):
     TITULO = TITULOS.get(requisicao) or requisicao
+
+    fig, ax = plot.subplots()
+    ax.set_title(TITULO)
+    ax.set_ylabel('Tempo(ms)')
+
+    tempos = []
+    for nome_arquivo in nomes_arquivos:
+        df = pandas.read_csv(CAMINHO_CSV + nome_arquivo + '.csv')
+        df_requisicao = df.loc[df[nome_chave] == requisicao]
+        tempos.append(df_requisicao['tempo(s)'].mul(1000))
+    
+    ax.boxplot(tempos, showmeans=True, showfliers=False, patch_artist=True)
+    ax.set_xticklabels(legendas)
+
+    plot.show()
+
+
+def gerar_graficos_linha(nomes_arquivos, requisicao, nome_chave, legendas):
+    TITULO = TITULOS.get(requisicao) or requisicao
+
+    fig, ax = plot.subplots()
+    ax.set_title(TITULO)
+    ax.set_xlabel('Requisição')
+    ax.set_ylabel('Tempo(ms)')
 
     for nome_arquivo in nomes_arquivos:
         df = pandas.read_csv(CAMINHO_CSV + nome_arquivo + '.csv')
         df_requisicao = df.loc[df[nome_chave] == requisicao]
         tempos = df_requisicao['tempo(s)'].mul(1000)
-
-        plot.title(TITULO)
-        plot.ylabel('Tempo(ms)')
-
-        plot.boxplot([tempos], showmeans=True, showfliers=False, patch_artist=True)
+        ax.plot(numpy.arange(0, len(tempos), 1), tempos)
     
-    plot.legend(nomes_arquivos)
+    ax.legend(legendas)
 
     plot.show()
 
 
-def gerar_graficos(nomes_arquivos, requisicoes, nome_chave):
+def gerar_graficos(nomes_arquivos, requisicoes, nome_chave, legendas):
     print('Gerando...')
-
-    # BoxPlot
-
     for requisicao in requisicoes:
-        gerar_boxplots(nomes_arquivos, requisicao, nome_chave)
-
-        # Histograma
-        # plot.title(TITULO)
-        # plot.xlabel('Tempo(ms)')
-        # plot.ylabel('Operações')
-
-        # plot.hist(tempos, bins=50, edgecolor='black', linewidth=0.5)
-
-        # plot.show()
-
-        # BoxPlot
-        # plot.title(TITULO)
-        # plot.ylabel('Tempo(ms)')
-        # plot.tick_params(axis='y', which='major', pad=10)
-
-        # plot.boxplot([tempos], showmeans=True, showfliers=False, patch_artist=True)
-
-        # estatisticas = boxplot_stats(tempos)[0]
-
-        # texto_estatistica = f'Média: {estatisticas['mean']}\n'
-        # texto_estatistica += f'Mediana: {estatisticas['med']}\n'
-        # texto_estatistica += f'Q1: {estatisticas['q1']}\n'
-        # texto_estatistica += f'Q3: {estatisticas['q3']}'
-
-        # print(texto_estatistica)
-
-        # plot.show()
-
-        # Gráfico de linha
-        # plot.title(TITULO)
-        # plot.xlabel("Requisição")
-        # plot.ylabel("Tempo(ms)")
-
-        # plot.plot(numpy.arange(0, len(tempos), 1), tempos);
-
-        # plot.show()
+        gerar_boxplots(nomes_arquivos, requisicao, nome_chave, legendas)
+        gerar_graficos_linha(nomes_arquivos, requisicao, nome_chave, legendas)
 
 
 def comparar_carregamento():
     gerar_graficos(['carregamento_postgresql', 'carregamento_mongodb','carregamento_redis'],
                    ['armazem', 'setor', 'cliente', 'item', 'estoque'],
-                   'tabela')
+                   'tabela',
+                   ['PostgreSQL', 'MongoDB', 'Redis'])
 
 
 def comparar_transacao():
     gerar_graficos(['transacao_postgresql', 'transacao_mongodb', 'transacao_redis'],
                    ['novo_pedido', 'pagamento', 'pedido_entregue', 'entrega', 'nivel_estoque'],
-                   'requisicao')
+                   'requisicao',
+                   ['PostgreSQL', 'MongoDB', 'Redis'])
 
 
 def main():
@@ -101,7 +84,7 @@ def main():
     
     print('Gerando gráficos...')
     comparar_carregamento()
-    # comparar_transacao()
+    comparar_transacao()
 
 if __name__ == '__main__':
     main()
