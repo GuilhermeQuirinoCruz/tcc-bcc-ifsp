@@ -1,5 +1,5 @@
 const express = require('express');
-const { client, connect, getNextId } = require('./db-config');
+const { connect } = require('./db-config');
 
 const app = express();
 const PORT = 3000;

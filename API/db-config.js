@@ -1,6 +1,8 @@
 const redis = require('redis');
 
-const client = redis.createClient(6379);
+const client = redis.createClient({
+  url: 'redis://default:password@db-redis:6379'
+});
 
 const connect = async() => {
   await client.connect();
