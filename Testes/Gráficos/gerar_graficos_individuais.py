@@ -2,7 +2,7 @@ import pandas
 import numpy
 
 import matplotlib.pyplot as plot
-from matplotlib import colors
+# from matplotlib import colors
 from matplotlib.cbook import boxplot_stats
 
 
@@ -31,50 +31,38 @@ def gerar_graficos(nome_arquivo, requisicoes, nome_chave):
         TITULO = TITULOS.get(requisicao) or requisicao
 
         # Histograma
-        fig, ax = plot.subplots(1, 1, sharey=True, tight_layout=True)
+        plot.title(TITULO)
+        plot.xlabel('Tempo(ms)')
+        plot.ylabel('Operações')
 
-        ax.set_title(TITULO)
-        ax.set_xlabel('Tempo(ms)')
-        ax.set_ylabel('Operações')
+        plot.hist(tempos, bins=50, edgecolor='black', linewidth=0.5)
 
-        ax.hist(tempos, bins=50, edgecolor='black', linewidth=0.5)
         plot.show()
 
         # BoxPlot
-        fig, ax = plot.subplots()
+        plot.title(TITULO)
+        plot.ylabel('Tempo(ms)')
+        plot.tick_params(axis='y', which='major', pad=10)
 
-        ax.set_title(TITULO)
-        ax.set_ylabel('Tempo(ms)')
-        ax.tick_params(axis='y', which='major', pad=50)
-
-        ax.boxplot([tempos], showmeans=True, showfliers=False, patch_artist=True)
+        plot.boxplot([tempos], showmeans=True, showfliers=False, patch_artist=True)
 
         estatisticas = boxplot_stats(tempos)[0]
-        media = estatisticas['mean']
-        mediana = estatisticas['med']
-        q1 = estatisticas['q1']
-        q3 = estatisticas['q3']
 
-        texto_estatistica = f'Média: {media}\n'
-        texto_estatistica += f'Mediana: {mediana}\n'
-        texto_estatistica += f'Q1: {q1}\n'
-        texto_estatistica += f'Q3: {q3}'
+        texto_estatistica = f'Média: {estatisticas['mean']}\n'
+        texto_estatistica += f'Mediana: {estatisticas['med']}\n'
+        texto_estatistica += f'Q1: {estatisticas['q1']}\n'
+        texto_estatistica += f'Q3: {estatisticas['q3']}'
 
         print(texto_estatistica)
-        # ax.annotate(texto_estatistica, (1.1, q1), bbox=dict(boxstyle="round", fc="0.8"))
-        
-        # extra_ticks = [media, mediana, q1, q3]
-        # ax.set_yticks(list(ax.get_yticks()) + extra_ticks)
-        # ax.hlines(extra_ticks, [0] * len(extra_ticks), [1] * len(extra_ticks),
-        #           zorder=0)
 
         plot.show()
 
         # Gráfico de linha
-        plot.plot(numpy.arange(0, len(tempos), 1), tempos);
         plot.title(TITULO)
         plot.xlabel("Requisição")
         plot.ylabel("Tempo(ms)")
+
+        plot.plot(numpy.arange(0, len(tempos), 1), tempos);
 
         plot.show()
 
@@ -89,8 +77,9 @@ def gerar_graficos_transacao():
 
 def main():
     plot.rcParams.update({'font.size': 14})
+
     print('Gerando gráficos...')
-    # gerar_graficos_carregamento()
+    gerar_graficos_carregamento()
     gerar_graficos_transacao()
 
 if __name__ == '__main__':
