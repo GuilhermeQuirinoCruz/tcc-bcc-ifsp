@@ -4,7 +4,7 @@ import pandas
 # Datasets
 CAMINHO_DATASET = 'csv/'
 
-QTD_ARMAZEM = 10
+QTD_ARMAZEM = 100
 QTD_SETOR = QTD_ARMAZEM * 10
 QTD_CLIENTE = QTD_SETOR * 10
 QTD_ITEM = 100
@@ -22,7 +22,7 @@ QTD_NIVEL_ESTOQUE = QTD_SETOR
 
 
 # Geral
-TAMANHO_LOTE = 10
+TAMANHO_LOTE = 100
 
 
 def gerar_csv(nome, colunas, caminho, qtd, get_row):
