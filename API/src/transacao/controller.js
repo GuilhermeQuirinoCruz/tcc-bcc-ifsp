@@ -135,6 +135,7 @@ const nivelEstoque = async (req, res) => {
             { $match: { 'setores._id': idSetor } },
             { $unwind: '$setores.clientes' },
             { $unwind: '$setores.clientes.pedidos' },
+            { $match: { 'setores.clientes.pedidos.entregue': false } },
             { $unwind: '$setores.clientes.pedidos.itens' },
             {
               $project: {
@@ -169,7 +170,7 @@ const nivelEstoque = async (req, res) => {
             ]
           )
           .next()).quantidade;
-
+        
         if (qtdEstoque < item.quantidade) {
           itensEmFalta.push({
             idItem: item._id,
