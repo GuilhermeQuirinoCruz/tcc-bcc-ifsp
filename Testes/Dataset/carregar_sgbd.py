@@ -11,6 +11,8 @@ COLUNAS = ['tabela', 'tempo(s)']
 CAMINHO_RESULTADO = '../Gráficos/resultados/carregamento.csv'
 
 def fazer_requisicoes(nome_arquivo):
+    print(f'Fazendo requisições do arquivo [{nome_arquivo}]')
+
     ENDPOINT = LINK_API + nome_arquivo
 
     for chunk in pandas.read_csv(CAMINHO_CSV + nome_arquivo + '.csv', chunksize=TAMANHO_CHUNK):
@@ -28,6 +30,8 @@ def fazer_requisicoes(nome_arquivo):
 
         df = pandas.DataFrame(resultados, columns=COLUNAS)
         df.to_csv(CAMINHO_RESULTADO, mode='a', header=False, index=False)
+    
+    print(f'Requisições do arquivo [{nome_arquivo}] finalizadas')
 
 
 def main():

@@ -11,6 +11,8 @@ COLUNAS = ['requisicao', 'tempo(s)']
 CAMINHO_RESULTADO = '../Gráficos/resultados/transacao.csv'
 
 def fazer_requisicoes(nome_arquivo):
+    print(f'Fazendo requisições do arquivo [{nome_arquivo}]')
+
     ENDPOINT = LINK_API + nome_arquivo
     REQUISICAO_GET = nome_arquivo in ['pedido_entregue', 'nivel_estoque']
 
@@ -35,6 +37,8 @@ def fazer_requisicoes(nome_arquivo):
         
         df = pandas.DataFrame(resultados, columns=COLUNAS)
         df.to_csv(CAMINHO_RESULTADO, mode='a', header=False, index=False)
+    
+    print(f'Requisições do arquivo [{nome_arquivo}] finalizadas')
 
 
 def main():
