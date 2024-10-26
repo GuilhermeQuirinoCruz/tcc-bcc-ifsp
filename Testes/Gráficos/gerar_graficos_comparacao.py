@@ -2,9 +2,9 @@ import pandas
 import numpy
 
 import matplotlib.pyplot as plot
-from matplotlib.cbook import boxplot_stats
 
 
+TAMANHO_FONTE = 16
 CAMINHO_CSV = 'resultados/'
 TITULOS = {
     'armazem': 'Armazém',
@@ -36,6 +36,8 @@ def gerar_boxplots(nomes_arquivos, requisicao, nome_chave, legendas):
     ax.boxplot(tempos, showmeans=True, showfliers=False, patch_artist=True)
     ax.set_xticklabels(legendas)
 
+    ax.set_ylim(bottom=0)
+
     plot.show()
 
 
@@ -51,38 +53,43 @@ def gerar_graficos_linha(nomes_arquivos, requisicao, nome_chave, legendas):
         df = pandas.read_csv(CAMINHO_CSV + nome_arquivo + '.csv')
         df_requisicao = df.loc[df[nome_chave] == requisicao]
         tempos = df_requisicao['tempo(s)'].mul(1000)
-        ax.plot(numpy.arange(0, len(tempos), 1), tempos)
+        ax.plot(numpy.arange(1, len(tempos) + 1, 1), tempos)
     
     ax.legend(legendas)
+
+    ax.set_xlim(left=0, right=len(tempos) + 1)
+    ax.set_xticks(list(ax.get_xticks())[1:-1] + [1, len(tempos)])
 
     plot.show()
 
 
 def gerar_graficos(nomes_arquivos, requisicoes, nome_chave, legendas):
-    print('Gerando...')
+    print(f'Gerando gráficos dos arquivos [{nomes_arquivos}]')
+
     for requisicao in requisicoes:
         gerar_boxplots(nomes_arquivos, requisicao, nome_chave, legendas)
         gerar_graficos_linha(nomes_arquivos, requisicao, nome_chave, legendas)
 
 
 def comparar_carregamento():
-    gerar_graficos(['carregamento_postgresql', 'carregamento_mongodb','carregamento_redis'],
+    gerar_graficos(['carregamento_postgresql', 'carregamento_redis','carregamento_mongodb'],
                    ['armazem', 'setor', 'cliente', 'item', 'estoque'],
                    'tabela',
-                   ['PostgreSQL', 'MongoDB', 'Redis'])
+                   ['PostgreSQL', 'Redis', 'MongoDB'])
 
 
 def comparar_transacao():
-    gerar_graficos(['transacao_postgresql', 'transacao_mongodb', 'transacao_redis'],
+    gerar_graficos(['transacao_postgresql', 'transacao_redis', 'transacao_mongodb'],
                    ['novo_pedido', 'pagamento', 'pedido_entregue', 'entrega', 'nivel_estoque'],
                    'requisicao',
-                   ['PostgreSQL', 'MongoDB', 'Redis'])
+                   ['PostgreSQL', 'Redis', 'MongoDB'])
 
 
 def main():
-    plot.rcParams.update({'font.size': 14})
+    plot.rcParams.update({'font.size': TAMANHO_FONTE})
     
     print('Gerando gráficos...')
+
     comparar_carregamento()
     comparar_transacao()
 
