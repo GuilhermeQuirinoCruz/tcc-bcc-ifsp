@@ -46,7 +46,7 @@ def gerar_graficos_linha(nomes_arquivos, requisicao, nome_chave, legendas):
 
     fig, ax = plot.subplots()
     ax.set_title(TITULO)
-    ax.set_xlabel('Requisição')
+    ax.set_xlabel('Nº da Requisição')
     ax.set_ylabel('Tempo(ms)')
 
     for nome_arquivo in nomes_arquivos:
@@ -64,7 +64,7 @@ def gerar_graficos_linha(nomes_arquivos, requisicao, nome_chave, legendas):
 
 
 def gerar_graficos(nomes_arquivos, requisicoes, nome_chave, legendas):
-    print(f'Gerando gráficos dos arquivos [{nomes_arquivos}]')
+    print(f'Gerando gráficos dos arquivos {nomes_arquivos}')
 
     for requisicao in requisicoes:
         gerar_boxplots(nomes_arquivos, requisicao, nome_chave, legendas)
