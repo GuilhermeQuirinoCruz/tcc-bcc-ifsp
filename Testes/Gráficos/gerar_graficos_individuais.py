@@ -5,6 +5,7 @@ import matplotlib.pyplot as plot
 from matplotlib.cbook import boxplot_stats
 
 
+TAMANHO_FONTE = 16
 CAMINHO_CSV = 'resultados/'
 TITULOS = {
     'armazem': 'Armazém',
@@ -21,7 +22,8 @@ TITULOS = {
 
 
 def gerar_graficos(nome_arquivo, requisicoes, nome_chave):
-    print('Gerando...')
+    print(f'Gerando gráficos do arquivo [{nome_arquivo}]')
+
     df = pandas.read_csv(CAMINHO_CSV + nome_arquivo + '.csv')
     for requisicao in requisicoes:
         df_requisicao = df.loc[df[nome_chave] == requisicao]
@@ -75,9 +77,10 @@ def gerar_graficos_transacao():
 
 
 def main():
-    plot.rcParams.update({'font.size': 14})
+    plot.rcParams.update({'font.size': TAMANHO_FONTE})
 
     print('Gerando gráficos...')
+
     gerar_graficos_carregamento()
     gerar_graficos_transacao()
 
