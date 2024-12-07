@@ -57,6 +57,7 @@ def gerar_graficos_linha(nomes_arquivos, requisicao, nome_chave, legendas):
     
     ax.legend(legendas)
 
+    ax.set_ylim(bottom=0)
     ax.set_xlim(left=0, right=len(tempos) + 1)
     ax.set_xticks(list(ax.get_xticks())[1:-1] + [1, len(tempos)])
 
